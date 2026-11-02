@@ -1,3 +1,5 @@
+import { ProductCard } from "@/components/common/ProductCard";
+
 const categories = [
   { name: "Bracelets", className: "category-bracelets" },
   { name: "Beads", className: "category-beads" },
@@ -6,10 +8,26 @@ const categories = [
 ];
 
 const products = [
-  ["Beaded Bracelet", "Hand-strung, adjustable fit.", "product-yellow"],
-  ["Mixed Bead Set", "Loose beads for your own designs.", "product-green"],
-  ["Handmade Scarf", "Knitted by hand. Also in machine-made.", "product-rose"],
-  ["Knit Gloves", "Warm everyday gloves.", "product-lilac"],
+  {
+    name: "Beaded Bracelet",
+    description: "Hand-strung, adjustable fit.",
+    price: 29.99,
+  },
+  {
+    name: "Mixed Bead Set",
+    description: "Loose beads for your own designs.",
+    price: 19.99,
+  },
+  {
+    name: "Handmade Scarf",
+    description: "Knitted by hand. Also in machine-made.",
+    price: 49.99,
+  },
+  {
+    name: "Knit Gloves",
+    description: "Warm everyday gloves.",
+    price: 24.99,
+  },
 ];
 
 export function ServicesSection() {
@@ -114,27 +132,8 @@ export function ServicesSection() {
           Featured pieces
         </h2>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
-          {products.map(([name, description, className]) => (
-            <article
-              className="flex-col gap-2.5 p-4 rounded-3xl bg-white flex"
-              key={name}
-            >
-              <div
-                className={`flex h-50 min-h-50 items-center justify-center overflow-hidden rounded-2xl text-[13px] text-muted ${className === "product-yellow" ? "bg-[#f7d9a8]" : className === "product-green" ? "bg-[#d9e6d3]" : className === "product-rose" ? "bg-[#f2c6bf]" : "bg-[#ebd0da]"}`}
-                aria-hidden="true"
-              >
-                [PRODUCT PHOTO]
-              </div>
-              <h3 className="m-0 font-display text-[21px]">{name}</h3>
-              <p className="m-0 text-[15px] text-muted">{description}</p>
-              <p className="m-0 font-bold text-ink">[PRICE]</p>
-              <button
-                className="mt-auto px-7.5 min-h-12 w-full justify-center rounded-full bg-brand font-bold text-ink inline-flex items-center"
-                type="button"
-              >
-                Add to bag
-              </button>
-            </article>
+          {products.map((product) => (
+            <ProductCard key={product.name} {...product} />
           ))}
         </div>
       </section>
