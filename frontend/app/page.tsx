@@ -1,5 +1,17 @@
+import { HeroSection } from "./_components/HeroSection";
+import { ServicesSection } from "./_components/ServicesSection";
+import { StorySection } from "./_components/StorySection";
+import { ContactSection } from "./_components/ContactSection";
+
 export default function Home() {
   return (
-    <div>Home page</div>
+    <>
+      <main>
+        <HeroSection />
+        <ServicesSection />
+        <StorySection />
+        <ContactSection />
+      </main>
+    </>
   );
 }
