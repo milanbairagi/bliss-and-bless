@@ -1,4 +1,5 @@
 import { ProductCard } from "@/components/common/ProductCard";
+import { getFeaturedProducts } from "@/services/productServices";
 
 const categories = [
   { name: "Bracelets", className: "category-bracelets" },
@@ -7,30 +8,9 @@ const categories = [
   { name: "Gloves", className: "category-gloves" },
 ];
 
-const products = [
-  {
-    name: "Beaded Bracelet",
-    description: "Hand-strung, adjustable fit.",
-    price: 29.99,
-  },
-  {
-    name: "Mixed Bead Set",
-    description: "Loose beads for your own designs.",
-    price: 19.99,
-  },
-  {
-    name: "Handmade Scarf",
-    description: "Knitted by hand. Also in machine-made.",
-    price: 49.99,
-  },
-  {
-    name: "Knit Gloves",
-    description: "Warm everyday gloves.",
-    price: 24.99,
-  },
-];
+export async function ServicesSection() {
+  const featuredProducts = await getFeaturedProducts();
 
-export function ServicesSection() {
   return (
     <>
       <section
@@ -132,8 +112,8 @@ export function ServicesSection() {
           Featured pieces
         </h2>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.name} {...product} />
+          {featuredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
