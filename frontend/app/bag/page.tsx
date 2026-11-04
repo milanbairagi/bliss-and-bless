@@ -49,12 +49,12 @@ export default function BagPage() {
                 <span className="font-bold">Total</span>
                 <span className="font-bold">${total.toFixed(2)}</span>
               </div>
-              <button
-                className="min-h-13 justify-center rounded-full bg-ink font-bold text-cream"
-                type="button"
+              <Link
+                className="inline-flex min-h-13 items-center justify-center rounded-full bg-ink font-bold text-cream"
+                href="/checkout"
               >
                 Checkout
-              </button>
+              </Link>
               <Link className="text-center font-medium" href="/products">
                 Continue shopping
               </Link>
