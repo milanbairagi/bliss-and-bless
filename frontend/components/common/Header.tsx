@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useBag } from "./BagProvider";
 
 export function Header() {
+  const { itemCount } = useBag();
+
   return (
     <header className="bg-brand text-ink">
       <div className="flex-col gap-4 px-5 py-4.5 mx-auto max-w-300 justify-between min-[721px]:flex-row min-[721px]:flex-wrap min-[721px]:items-center min-[721px]:px-8 flex items-start">
@@ -22,12 +27,12 @@ export function Header() {
           <NavLink href="/products?category=glove">Gloves</NavLink>
           <NavLink href="#">Our story</NavLink>
         </nav>
-        <a
+        <Link
           className="px-5.5 min-h-11 justify-center rounded-full bg-ink text-[15px] font-bold text-cream inline-flex items-center"
-          href="#"
+          href="/bag"
         >
-          Bag (0)
-        </a>
+          Bag ({itemCount})
+        </Link>
       </div>
     </header>
   );

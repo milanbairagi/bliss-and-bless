@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import type { Product } from "@/types/product";
 import Image from "next/image";
+import { makeBagItem, useBag } from "./BagProvider";
 
 // Temporary category styles for demonstration purposes when no product image is available.
 const categoryStyles: Record<
@@ -14,6 +17,7 @@ const categoryStyles: Record<
 };
 
 export function ProductCard({ product }: { product: Product }) {
+  const { addItem } = useBag();
   const style = categoryStyles[product.category] ?? {
     tint: "bg-[#ebd0da]",
     dot: "bg-ink",
@@ -64,6 +68,11 @@ export function ProductCard({ product }: { product: Product }) {
         <button
           className="mt-auto px-7.5 min-h-12 w-full justify-center rounded-full bg-brand font-bold text-ink inline-flex items-center"
           type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            addItem(makeBagItem(product));
+          }}
         >
           Add to bag
         </button>

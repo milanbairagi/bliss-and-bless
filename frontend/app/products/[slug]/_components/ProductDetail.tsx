@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { MultiColorProductDetail, ProductDetail } from "@/types/product";
 import Image from "next/image";
+import { makeBagItem, useBag } from "@/components/common/BagProvider";
 
 function isMultiColorProduct(
   product: ProductDetail,
@@ -20,6 +21,7 @@ export function ProductDetail({
   const [imageIndex, setImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const { addItem } = useBag();
   const isMultiColor = isMultiColorProduct(productDetail);
   const selectedColorImage = isMultiColor
     ? productDetail.image[colorIndex]
@@ -193,7 +195,24 @@ export function ProductDetail({
             </div>
             <button
               className="flex-1 px-7.5 min-h-13 min-w-50 rounded-full border-0 bg-ink font-bold text-cream"
-              onClick={() => setAdded(true)}
+              onClick={() => {
+                addItem(
+                  makeBagItem({
+                    slug: productDetail.slug,
+                    name: productDetail.name,
+                    description: productDetail.description,
+                    price: productDetail.price,
+                    category: productDetail.category,
+                    image: selectedImage,
+                    detail: selectedColorName
+                      ? `${productDetail.make} · ${selectedColorName}`
+                      : productDetail.make,
+                    variantKey: `${productDetail.slug}:${selectedColorName ?? "default"}`,
+                  }),
+                  quantity,
+                );
+                setAdded(true);
+              }}
               type="button"
             >
               {added ? "Added to bag" : "Add to bag"}
