@@ -100,7 +100,7 @@ async function ProductsPageContent({
 
         <div className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-6">
           {visibleProducts.map((product) => (
-            <ProductCard key={product.id} product={product} catalog />
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
