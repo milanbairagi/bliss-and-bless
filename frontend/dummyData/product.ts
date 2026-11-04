@@ -118,6 +118,7 @@ export const products: Product[] = [
     price: 39.99,
     slug: "woven-scarf",
     category: "scarves",
+    image: "https://dummyimages.dev/800x600.webp",
   },
 ];
 

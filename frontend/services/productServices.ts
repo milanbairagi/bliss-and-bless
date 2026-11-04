@@ -1,5 +1,9 @@
 import type { Product, ProductDetail } from "@/types/product";
-import { multiColorProductDetail, featuredProducts } from "@/dummyData/product";
+import {
+  multiColorProductDetail,
+  featuredProducts,
+  products,
+} from "@/dummyData/product";
 
 export async function getProductBySlug(
   slug: string,
@@ -22,4 +26,23 @@ export async function getProductBySlug(
 
 export async function getFeaturedProducts(): Promise<Product[]> {
   return featuredProducts;
+}
+
+export async function getProducts(category = "all"): Promise<Product[]> {
+  const normalizedCategory = category.trim().toLowerCase();
+
+  if (!normalizedCategory || normalizedCategory === "all") {
+    return products;
+  }
+
+  const categoryAliases: Record<string, string> = {
+    bracelet: "bracelets",
+    bead: "beads",
+    scarf: "scarves",
+    glove: "gloves",
+  };
+  const productCategory =
+    categoryAliases[normalizedCategory] ?? normalizedCategory;
+
+  return products.filter((product) => product.category === productCategory);
 }
