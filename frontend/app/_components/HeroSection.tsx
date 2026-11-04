@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function HeroSection() {
   return (
     <section
@@ -20,18 +22,18 @@ export function HeroSection() {
           knitted or woven for you to wear and to give.
         </p>
         <div className="flex-wrap gap-4 flex">
-          <a
+          <Link
             className="px-7.5 min-h-12 justify-center rounded-full bg-brand font-bold text-ink inline-flex items-center"
-            href="#shop"
+            href="/products"
           >
             Shop the collection
-          </a>
-          <a
+          </Link>
+          <Link
             className="px-7.5 min-h-12 justify-center rounded-full border-2 border-ink bg-transparent font-bold text-ink inline-flex items-center"
             href="#story"
           >
             Meet the makers
-          </a>
+          </Link>
         </div>
       </div>
       <div

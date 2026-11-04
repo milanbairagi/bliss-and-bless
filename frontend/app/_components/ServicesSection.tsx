@@ -1,11 +1,28 @@
 import { ProductCard } from "@/components/common/ProductCard";
 import { getFeaturedProducts } from "@/services/productServices";
+import Link from "next/link";
 
 const categories = [
-  { name: "Bracelets", className: "category-bracelets" },
-  { name: "Beads", className: "category-beads" },
-  { name: "Scarves", className: "category-scarves" },
-  { name: "Gloves", className: "category-gloves" },
+  {
+    name: "Bracelets",
+    className: "category-bracelets",
+    href: "/products?category=bracelet",
+  },
+  {
+    name: "Beads",
+    className: "category-beads",
+    href: "/products?category=bead",
+  },
+  {
+    name: "Scarves",
+    className: "category-scarves",
+    href: "/products?category=scarf",
+  },
+  {
+    name: "Gloves",
+    className: "category-gloves",
+    href: "/products?category=glove",
+  },
 ];
 
 export async function ServicesSection() {
@@ -26,9 +43,9 @@ export async function ServicesSection() {
         </h2>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
           {categories.map((category) => (
-            <a
+            <Link
               className="flex-col gap-3.5 flex"
-              href="#shop"
+              href={category.href}
               key={category.name}
             >
               <div
@@ -66,7 +83,7 @@ export async function ServicesSection() {
               <span className="font-display text-2xl font-bold">
                 {category.name}
               </span>
-            </a>
+            </Link>
           ))}
         </div>
       </section>
