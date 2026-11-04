@@ -15,21 +15,12 @@ export function Header() {
           className="flex-wrap gap-x-5 gap-y-3.5 min-[721px]:gap-7 flex"
           aria-label="Main navigation"
         >
-          <a className="text-[15px] font-medium" href="#">
-            Bracelets
-          </a>
-          <a className="text-[15px] font-medium" href="#">
-            Beads
-          </a>
-          <a className="text-[15px] font-medium" href="#">
-            Scarves
-          </a>
-          <a className="text-[15px] font-medium" href="#">
-            Gloves
-          </a>
-          <a className="text-[15px] font-medium" href="#">
-            Our story
-          </a>
+          <NavLink href="/products">Shop All</NavLink>
+          <NavLink href="/products?category=bracelet">Bracelets</NavLink>
+          <NavLink href="/products?category=bead">Beads</NavLink>
+          <NavLink href="/products?category=scarf">Scarves</NavLink>
+          <NavLink href="/products?category=glove">Gloves</NavLink>
+          <NavLink href="#">Our story</NavLink>
         </nav>
         <a
           className="px-5.5 min-h-11 justify-center rounded-full bg-ink text-[15px] font-bold text-cream inline-flex items-center"
@@ -41,3 +32,17 @@ export function Header() {
     </header>
   );
 }
+
+const NavLink = ({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <Link className="text-[15px] font-medium" href={href}>
+      {children}
+    </Link>
+  );
+};
