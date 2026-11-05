@@ -89,3 +89,19 @@ class ProductSerializer(serializers.ModelSerializer):
             ]
         item = stock.filter(color__isnull=True).first() or stock.first()
         return item.quantity if item else 0
+
+
+class ProductListSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source="category.name", read_only=True)
+    price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, coerce_to_string=False
+    )
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = ["id", "slug", "name", "description", "price", "category", "image"]
+
+    def get_image(self, product):
+        image = product.images.filter(is_primary=True).first()
+        return image.image.url if image else None
