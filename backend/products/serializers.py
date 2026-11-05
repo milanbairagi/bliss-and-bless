@@ -20,6 +20,13 @@ class ProductSerializer(serializers.ModelSerializer):
     details = serializers.SerializerMethodField()
     stock = serializers.SerializerMethodField()
 
+    def _get_image_url(self, image):
+        request = self.context.get("request")
+        image_url = image.image.url
+        if request is not None:
+            return request.build_absolute_uri(image_url)
+        return image_url
+
     class Meta:
         model = Product
         fields = [
@@ -49,12 +56,12 @@ class ProductSerializer(serializers.ModelSerializer):
         images = product.images.filter(is_primary=True)
         if product.colors.count() > 1:
             return [
-                {"color": image.color.name, "url": image.image.url}
+                {"color": image.color.name, "url": self._get_image_url(image)}
                 for image in images
                 if image.color is not None
             ]
         image = images.first()
-        return image.image.url if image else None
+        return self._get_image_url(image) if image else None
 
     def get_other_images(self, product):
         images = product.images.filter(is_primary=False)
@@ -67,12 +74,12 @@ class ProductSerializer(serializers.ModelSerializer):
                         {
                             "color": color.name,
                             "urls": [
-                                image.image.url for image in color_images
+                                self._get_image_url(image) for image in color_images
                             ],
                         }
                     )
             return grouped_images
-        return [image.image.url for image in images]
+        return [self._get_image_url(image) for image in images]
 
     def get_details(self, product):
         return [
@@ -104,4 +111,10 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     def get_image(self, product):
         image = product.images.filter(is_primary=True).first()
-        return image.image.url if image else None
+        request = self.context.get("request")
+        if image:
+            image_url = image.image.url
+            if request is not None:
+                return request.build_absolute_uri(image_url)
+            return image_url
+        return None
