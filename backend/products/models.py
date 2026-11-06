@@ -28,6 +28,7 @@ class Category(models.Model):
 
     class Meta:
         ordering = ["name"]
+        verbose_name_plural = "Categories"
 
     def __str__(self):
         return self.name
@@ -69,6 +70,7 @@ class ProductImage(models.Model):
 
     class Meta:
         ordering = ["position", "id"]
+        verbose_name_plural = "Product Images"
 
     def __str__(self):
         return self.image.name
