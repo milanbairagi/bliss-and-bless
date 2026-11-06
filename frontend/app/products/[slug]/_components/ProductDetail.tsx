@@ -116,7 +116,7 @@ export function ProductDetail({
               {productDetail.name}
             </h1>
             <p className="mb-0 mt-3 text-2xl font-bold">
-              ${productDetail.price.toFixed(2)}
+              Rs. {productDetail.price.toFixed(2)}
             </p>
           </div>
 

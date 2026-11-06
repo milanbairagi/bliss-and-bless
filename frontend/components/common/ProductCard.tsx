@@ -63,7 +63,7 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
         <h3 className="m-0 font-display text-[21px]">{product.name}</h3>
         <p className="m-0 text-[15px] text-muted">{product.description}</p>
-        <p className="m-0 font-bold text-ink">${product.price.toFixed(2)}</p>
+        <p className="m-0 font-bold text-ink">Rs. {product.price.toFixed(2)}</p>
 
         <button
           className="mt-auto px-7.5 min-h-12 w-full justify-center rounded-full bg-brand font-bold text-ink inline-flex items-center"
