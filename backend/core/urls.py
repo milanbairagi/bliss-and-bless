@@ -18,10 +18,17 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
+from orders.views import OrderCreateView, OrderDetailView
 from products.views import ProductListView, ProductDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/products/', ProductListView.as_view(), name='product-list'),
     path('api/products/<slug:slug>/', ProductDetailView.as_view(), name='product-detail'),
+    path('api/orders/', OrderCreateView.as_view(), name='order-create'),
+    path(
+        'api/orders/<uuid:reference_id>/',
+        OrderDetailView.as_view(),
+        name='order-detail',
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
