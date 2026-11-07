@@ -176,17 +176,17 @@ export default function CheckoutPage() {
               ))}
               <div className="mt-2 gap-4 pt-4 justify-between border-t border-[#f3ddd6] flex">
                 <span>Items ({itemCount})</span>
-                <span className="font-bold">${subtotal.toFixed(2)}</span>
+                <span className="font-bold">Rs. {subtotal.toFixed(2)}</span>
               </div>
               <div className="gap-4 justify-between flex">
                 <span>Shipping</span>
                 <span className="font-bold">
-                  {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                  {shipping === 0 ? "Free" : `Rs. ${shipping.toFixed(2)}`}
                 </span>
               </div>
               <div className="gap-4 pt-4 justify-between border-t border-[#f3ddd6] text-xl flex">
                 <span className="font-bold">Total</span>
-                <span className="font-bold">${total.toFixed(2)}</span>
+                <span className="font-bold">Rs. {total.toFixed(2)}</span>
               </div>
               <button
                 className="min-h-13 rounded-full bg-ink font-bold text-cream"
@@ -254,7 +254,7 @@ function CheckoutItem({ item }: { item: BagItem }) {
         <div className="text-sm text-muted">Qty {item.quantity}</div>
       </div>
       <span className="font-bold">
-        ${(item.price * item.quantity).toFixed(2)}
+        Rs. {(item.price * item.quantity).toFixed(2)}
       </span>
     </div>
   );
