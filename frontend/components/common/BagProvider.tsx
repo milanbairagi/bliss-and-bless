@@ -28,6 +28,7 @@ type BagContextValue = {
   addItem: (item: Omit<BagItem, "quantity">, quantity?: number) => void;
   updateQuantity: (key: string, quantity: number) => void;
   removeItem: (key: string) => void;
+  clearBag: () => void;
 };
 
 const BagContext = createContext<BagContextValue | null>(null);
@@ -87,6 +88,8 @@ export function BagProvider({ children }: { children: ReactNode }) {
     setItems((current) => current.filter((item) => item.key !== key));
   }, []);
 
+  const clearBag = useCallback(() => setItems([]), []);
+
   const value = useMemo(
     () => ({
       items,
@@ -94,8 +97,9 @@ export function BagProvider({ children }: { children: ReactNode }) {
       addItem,
       updateQuantity,
       removeItem,
+      clearBag,
     }),
-    [items, addItem, updateQuantity, removeItem],
+    [items, addItem, updateQuantity, removeItem, clearBag],
   );
 
   return <BagContext.Provider value={value}>{children}</BagContext.Provider>;
