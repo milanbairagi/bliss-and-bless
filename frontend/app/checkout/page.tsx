@@ -4,6 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useBag, type BagItem } from "@/components/common/BagProvider";
+import OrderConfirmation, {
+  type ConfirmationSnapshot,
+} from "@/components/OrderConfirmation";
 import { getShippingCost } from "@/services/orderServices";
 import type { CustomerDetails } from "@/types/customer";
 import { placeOrder } from "@/services/orderServices";
@@ -51,14 +54,19 @@ const fields = [
 ];
 
 export default function CheckoutPage() {
-  const { items, itemCount } = useBag();
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "qr">("card");
+  const { items, itemCount, clearBag } = useBag();
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "qr">("qr");
   const subtotal = items.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
   );
   const [shippingFee, setShippingFee] = useState(0);
   const [shippingThreshold, setShippingThreshold] = useState(0);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [orderError, setOrderError] = useState("");
+  const [confirmation, setConfirmation] = useState<ConfirmationSnapshot | null>(
+    null,
+  );
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
     email: "",
     firstName: "",
@@ -82,15 +90,44 @@ export default function CheckoutPage() {
   const total = subtotal + shipping;
 
   const handlePlaceOrder = useCallback(async () => {
+    setIsPlacingOrder(true);
+    setOrderError("");
     try {
       const response = await placeOrder(items, customerDetails);
       if (response) {
-        console.log("Order placed successfully:", response);
+        setConfirmation({
+          order: response,
+          items,
+          paymentMethod,
+          subtotal,
+          shipping,
+          total,
+        });
+        clearBag();
       }
     } catch (error) {
       console.error("Error placing order:", error);
+      setOrderError(
+        error instanceof Error
+          ? error.message
+          : "We could not place your order. Please try again.",
+      );
+    } finally {
+      setIsPlacingOrder(false);
     }
-  }, [items, customerDetails]);
+  }, [
+    items,
+    customerDetails,
+    paymentMethod,
+    subtotal,
+    shipping,
+    total,
+    clearBag,
+  ]);
+
+  if (confirmation) {
+    return <OrderConfirmation snapshot={confirmation} />;
+  }
 
   return (
     <main>
@@ -240,9 +277,15 @@ export default function CheckoutPage() {
                 onClick={handlePlaceOrder}
                 className="min-h-13 rounded-full bg-ink font-bold text-cream active:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/50 disabled:text-cream/70"
                 type="button"
+                disabled={isPlacingOrder}
               >
-                Place order
+                {isPlacingOrder ? "Placing order..." : "Place order"}
               </button>
+              {orderError ? (
+                <p className="m-0 text-center text-sm text-red" role="alert">
+                  {orderError}
+                </p>
+              ) : null}
               <p className="m-0 text-center text-sm text-muted">
                 Payments are not connected yet.
               </p>
