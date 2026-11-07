@@ -2,11 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useBag, type BagItem } from "@/components/common/BagProvider";
-
-const shippingFee = 12;
-const shippingThreshold = 500;
+import { getShippingCost } from "@/services/orderServices";
 
 const fields = [
   {
@@ -26,7 +24,6 @@ const fields = [
     wide: true,
   },
   { id: "city", label: "City", type: "text", placeholder: "" },
-  { id: "postal-code", label: "Postal code", type: "text", placeholder: "" },
   { id: "phone", label: "Phone", type: "tel", placeholder: "", wide: true },
 ];
 
@@ -37,6 +34,19 @@ export default function CheckoutPage() {
     (total, item) => total + item.price * item.quantity,
     0,
   );
+  const [shippingFee, setShippingFee] = useState(0);
+  const [shippingThreshold, setShippingThreshold] = useState(0);
+
+  useEffect(() => {
+    const fetchShippingCost = async () => {
+      const { fee, threshold } = await getShippingCost();
+      setShippingFee(fee);
+      setShippingThreshold(threshold);
+    };
+
+    fetchShippingCost();
+  }, []);
+
   const shipping = subtotal >= shippingThreshold ? 0 : shippingFee;
   const total = subtotal + shipping;
 
