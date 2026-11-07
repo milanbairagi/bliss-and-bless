@@ -207,7 +207,9 @@ export function ProductDetail({
                     detail: selectedColorName
                       ? `${productDetail.make} · ${selectedColorName}`
                       : productDetail.make,
-                    variantKey: `${productDetail.slug}:${selectedColorName ?? "default"}`,
+                    variantKey: selectedColorName
+                      ? `${productDetail.slug}:${selectedColorName}`
+                      : productDetail.slug,
                   }),
                   quantity,
                 );
