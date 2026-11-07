@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useBag, type BagItem } from "@/components/common/BagProvider";
 import { getShippingCost } from "@/services/orderServices";
+import type { CustomerDetails } from "@/types/customer";
+import { placeOrder } from "@/services/orderServices";
 
 const fields = [
   {
@@ -13,18 +15,39 @@ const fields = [
     type: "email",
     placeholder: "you@example.com",
     wide: true,
+    key: "email",
   },
-  { id: "first-name", label: "First name", type: "text", placeholder: "" },
-  { id: "last-name", label: "Last name", type: "text", placeholder: "" },
+  {
+    id: "first-name",
+    label: "First name",
+    type: "text",
+    placeholder: "",
+    key: "firstName",
+  },
+  {
+    id: "last-name",
+    label: "Last name",
+    type: "text",
+    placeholder: "",
+    key: "lastName",
+  },
   {
     id: "address",
     label: "Address",
     type: "text",
     placeholder: "Street and number",
     wide: true,
+    key: "address",
   },
-  { id: "city", label: "City", type: "text", placeholder: "" },
-  { id: "phone", label: "Phone", type: "tel", placeholder: "", wide: true },
+  { id: "city", label: "City", type: "text", placeholder: "", key: "city" },
+  {
+    id: "phone",
+    label: "Phone",
+    type: "tel",
+    placeholder: "",
+    wide: true,
+    key: "phone",
+  },
 ];
 
 export default function CheckoutPage() {
@@ -36,6 +59,14 @@ export default function CheckoutPage() {
   );
   const [shippingFee, setShippingFee] = useState(0);
   const [shippingThreshold, setShippingThreshold] = useState(0);
+  const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
+    email: "",
+    firstName: "",
+    lastName: "",
+    address: "",
+    city: "",
+    phone: "",
+  });
 
   useEffect(() => {
     const fetchShippingCost = async () => {
@@ -49,6 +80,17 @@ export default function CheckoutPage() {
 
   const shipping = subtotal >= shippingThreshold ? 0 : shippingFee;
   const total = subtotal + shipping;
+
+  const handlePlaceOrder = useCallback(async () => {
+    try {
+      const response = await placeOrder(items, customerDetails);
+      if (response) {
+        console.log("Order placed successfully:", response);
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+    }
+  }, [items, customerDetails]);
 
   return (
     <main>
@@ -114,6 +156,12 @@ export default function CheckoutPage() {
                         id={field.id}
                         placeholder={field.placeholder}
                         type={field.type}
+                        onChange={(e) =>
+                          setCustomerDetails((prev) => ({
+                            ...prev,
+                            [field.key]: e.target.value,
+                          }))
+                        }
                       />
                     </label>
                   ))}
@@ -189,7 +237,8 @@ export default function CheckoutPage() {
                 <span className="font-bold">Rs. {total.toFixed(2)}</span>
               </div>
               <button
-                className="min-h-13 rounded-full bg-ink font-bold text-cream"
+                onClick={handlePlaceOrder}
+                className="min-h-13 rounded-full bg-ink font-bold text-cream active:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/50 disabled:text-cream/70"
                 type="button"
               >
                 Place order
