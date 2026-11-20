@@ -1,6 +1,13 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    PolymorphicProxySerializer,
+    extend_schema,
+)
 
+from .filters import ProductFilter
 from .models import Product
 from .serializers import (
     MultipleColorsProductResponseSerializer,
@@ -10,9 +17,32 @@ from .serializers import (
 )
 
 
+@extend_schema(
+    summary="List products",
+    description=(
+        "Optionally filter products with `featured=true` or `featured=false` "
+        "and by category, for example `category=bracelet`."
+    ),
+    parameters=[
+        OpenApiParameter(
+            name="featured",
+            type=OpenApiTypes.BOOL,
+            location=OpenApiParameter.QUERY,
+            description="Filter by featured status.",
+        ),
+        OpenApiParameter(
+            name="category",
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description="Filter by category name. Use `all` for every category.",
+        ),
+    ],
+)
 class ProductListView(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductListSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter
 
 
 @extend_schema(
