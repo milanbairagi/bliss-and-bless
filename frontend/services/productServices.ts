@@ -1,48 +1,46 @@
 import type { Product, ProductDetail } from "@/types/product";
-import {
-  multiColorProductDetail,
-  featuredProducts,
-  products,
-} from "@/dummyData/product";
+import { API_BASE_URL } from "@/constants";
 
 export async function getProductBySlug(
   slug: string,
 ): Promise<ProductDetail | null> {
-  // Dummy implementation for fetching product data by slug
   if (!slug) return null;
-  const returnData: ProductDetail = multiColorProductDetail;
 
-  // Sleep 2 sec
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  const response = await fetch(`${API_BASE_URL}/api/products/${slug}`);
 
-  const res = await Promise.resolve({
-    ok: true,
-    json: async () => returnData,
-  });
+  if (!response.ok) {
+    console.error(`Failed to fetch product with slug: ${slug}`);
+    return null;
+  }
 
-  if (!res.ok) return null;
-  return res.json();
+  const data: ProductDetail = await response.json();
+  return data;
 }
 
 export async function getFeaturedProducts(): Promise<Product[]> {
-  return featuredProducts;
+  const response = await fetch(`${API_BASE_URL}/api/products/?featured=true`);
+  if (!response.ok) {
+    console.error("Failed to fetch featured products");
+    return [];
+  }
+
+  const data: Product[] = await response.json();
+  return data;
 }
 
 export async function getProducts(category = "all"): Promise<Product[]> {
   const normalizedCategory = category.trim().toLowerCase();
 
-  if (!normalizedCategory || normalizedCategory === "all") {
-    return products;
+  const response = await fetch(
+    `${API_BASE_URL}/api/products/?category=${normalizedCategory}`,
+  );
+
+  if (!response.ok) {
+    console.error("Failed to fetch products");
+    return [];
   }
 
-  const categoryAliases: Record<string, string> = {
-    bracelet: "bracelets",
-    bead: "beads",
-    scarf: "scarves",
-    glove: "gloves",
-  };
-  const productCategory =
-    categoryAliases[normalizedCategory] ?? normalizedCategory;
-
-  return products.filter((product) => product.category === productCategory);
+  const data: Product[] = await response.json();
+  console.log("Fetched products:", data);
+  return data;
 }
