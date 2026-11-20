@@ -9,6 +9,55 @@ class ProductColorSerializer(serializers.ModelSerializer):
         fields = ["name", "hex"]
 
 
+class SingleColorProductResponseSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    slug = serializers.CharField()
+    name = serializers.CharField()
+    description = serializers.CharField()
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    colors = ProductColorSerializer(allow_null=True)
+    category = serializers.CharField()
+    make = serializers.CharField()
+    image = serializers.CharField(allow_null=True)
+    other_images = serializers.ListField(child=serializers.CharField())
+    details = serializers.ListField(
+        child=serializers.ListField(child=serializers.CharField())
+    )
+    stock = serializers.IntegerField()
+
+
+class ProductColorImageSerializer(serializers.Serializer):
+    color = serializers.CharField()
+    url = serializers.CharField()
+
+
+class ProductColorImagesSerializer(serializers.Serializer):
+    color = serializers.CharField()
+    urls = serializers.ListField(child=serializers.CharField())
+
+
+class ProductColorStockSerializer(serializers.Serializer):
+    color = serializers.CharField()
+    quantity = serializers.IntegerField()
+
+
+class MultipleColorsProductResponseSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    slug = serializers.CharField()
+    name = serializers.CharField()
+    description = serializers.CharField()
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    colors = serializers.ListField(child=ProductColorSerializer())
+    category = serializers.CharField()
+    make = serializers.CharField()
+    image = serializers.ListField(child=ProductColorImageSerializer())
+    other_images = serializers.ListField(child=ProductColorImagesSerializer())
+    details = serializers.ListField(
+        child=serializers.ListField(child=serializers.CharField())
+    )
+    stock = serializers.ListField(child=ProductColorStockSerializer())
+
+
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.CharField(source="category.name", read_only=True)
     price = serializers.DecimalField(
