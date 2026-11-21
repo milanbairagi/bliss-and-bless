@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   /* config options here */
   images: {
     remotePatterns: [
@@ -8,14 +9,24 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "dummyimages.dev",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
     ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/media/:path*",
+        destination: "http://nginx:80/media/:path*",
+      },
+    ];
   },
   experimental: {
     agentFeedback: true,
     agentUpgrade: "security",
   },
-  cacheComponents: true,
-  partialPrefetching: true,
   turbopack: {
     root: __dirname,
     rules: {
