@@ -1,0 +1,10 @@
+.git
+.gitignore
+.worktrees
+.env
+**/.env
+**/__pycache__
+**/*.pyc
+**/.next
+**/node_modules
+**/db.sqlite3
