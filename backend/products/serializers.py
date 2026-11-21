@@ -70,11 +70,7 @@ class ProductSerializer(serializers.ModelSerializer):
     stock = serializers.SerializerMethodField()
 
     def _get_image_url(self, image):
-        request = self.context.get("request")
-        image_url = image.image.url
-        if request is not None:
-            return request.build_absolute_uri(image_url)
-        return image_url
+        return image.image.url
 
     class Meta:
         model = Product
@@ -160,10 +156,6 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     def get_image(self, product):
         image = product.images.filter(is_primary=True).first()
-        request = self.context.get("request")
         if image:
-            image_url = image.image.url
-            if request is not None:
-                return request.build_absolute_uri(image_url)
-            return image_url
+            return image.image.url
         return None
