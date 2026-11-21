@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import { ProductCard } from "@/components/common/ProductCard";
 import { getProducts } from "@/services/productServices";
 
+export const dynamic = "force-dynamic";
+
 const categories = [
   { value: "bracelet", label: "Bracelets" },
   { value: "bead", label: "Beads" },
