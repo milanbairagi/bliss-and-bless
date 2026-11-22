@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Children,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { Children, useEffect, useRef, useState, type ReactNode } from "react";
 
 type CarouselProps = {
   children: ReactNode;
@@ -100,7 +94,7 @@ export function Carousel({
 
       <div
         ref={viewportRef}
-        className="flex touch-pan-x gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex touch-pan-x gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none [&::-webkit-scrollbar]:hidden"
         role="region"
         aria-label={ariaLabel}
       >
