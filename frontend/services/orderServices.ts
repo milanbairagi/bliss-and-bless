@@ -2,6 +2,18 @@ import { BagItem } from "@/components/common/BagProvider";
 import type { CustomerDetails } from "@/types/customer";
 import type { orderConfirmation } from "@/types/order";
 
+export type OrderFieldErrors = Record<string, string[]>;
+
+export class OrderRequestError extends Error {
+  fieldErrors: OrderFieldErrors;
+
+  constructor(fieldErrors: OrderFieldErrors = {}, message = "Please correct the highlighted fields.") {
+    super(message);
+    this.name = "OrderRequestError";
+    this.fieldErrors = fieldErrors;
+  }
+}
+
 export async function getShippingCost(): Promise<{
   fee: number;
   threshold: number;
@@ -41,6 +53,32 @@ export async function placeOrder(
   const response = await fetch("/api/orders/", request);
 
   if (!response.ok) {
+    let payload: unknown = null;
+
+    try {
+      payload = await response.json();
+    } catch {
+      throw new Error("Failed to place order");
+    }
+
+    if (payload && typeof payload === "object" && !Array.isArray(payload)) {
+      const fieldErrors: OrderFieldErrors = {};
+
+      for (const [field, value] of Object.entries(payload)) {
+        if (Array.isArray(value)) {
+          fieldErrors[field] = value
+            .filter((message): message is string => typeof message === "string")
+            .map((message) => message);
+        } else if (typeof value === "string") {
+          fieldErrors[field] = [value];
+        }
+      }
+
+      if (Object.keys(fieldErrors).length > 0) {
+        throw new OrderRequestError(fieldErrors);
+      }
+    }
+
     throw new Error("Failed to place order");
   }
 

@@ -9,9 +9,25 @@ import OrderConfirmation, {
 } from "@/components/OrderConfirmation";
 import { getShippingCost } from "@/services/orderServices";
 import type { CustomerDetails } from "@/types/customer";
-import { placeOrder } from "@/services/orderServices";
+import {
+  OrderRequestError,
+  placeOrder,
+  type OrderFieldErrors,
+} from "@/services/orderServices";
 
-const fields = [
+type CheckoutFieldKey = "email" | "first_name" | "last_name" | "address" | "city" | "phone";
+
+const fields: Array<{
+  id: string;
+  label: string;
+  type: string;
+  placeholder: string;
+  wide?: boolean;
+  key: CheckoutFieldKey;
+  required: boolean;
+  pattern?: string;
+  maxLength?: number;
+}> = [
   {
     id: "email",
     label: "Email",
@@ -19,6 +35,7 @@ const fields = [
     placeholder: "you@example.com",
     wide: true,
     key: "email",
+    required: true,
   },
   {
     id: "first-name",
@@ -26,6 +43,7 @@ const fields = [
     type: "text",
     placeholder: "",
     key: "first_name",
+    required: true,
   },
   {
     id: "last-name",
@@ -33,6 +51,7 @@ const fields = [
     type: "text",
     placeholder: "",
     key: "last_name",
+    required: true,
   },
   {
     id: "address",
@@ -41,8 +60,16 @@ const fields = [
     placeholder: "Street and number",
     wide: true,
     key: "address",
+    required: true,
   },
-  { id: "city", label: "City", type: "text", placeholder: "", key: "city" },
+  {
+    id: "city",
+    label: "City",
+    type: "text",
+    placeholder: "",
+    key: "city",
+    required: true,
+  },
   {
     id: "phone",
     label: "Phone",
@@ -50,6 +77,9 @@ const fields = [
     placeholder: "",
     wide: true,
     key: "phone",
+    required: true,
+    pattern: "^(97|98)[0-9]{8}$",
+    maxLength: 10,
   },
 ];
 
@@ -64,6 +94,7 @@ export default function CheckoutPage() {
   const [shippingThreshold, setShippingThreshold] = useState(0);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [orderError, setOrderError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<OrderFieldErrors>({});
   const [confirmation, setConfirmation] = useState<ConfirmationSnapshot | null>(
     null,
   );
@@ -90,8 +121,22 @@ export default function CheckoutPage() {
   const total = subtotal + shipping;
 
   const handlePlaceOrder = useCallback(async () => {
+    const missingFieldErrors: OrderFieldErrors = {};
+    for (const field of fields) {
+      if (!customerDetails[field.key].trim()) {
+        missingFieldErrors[field.key] = ["This field is required."];
+      }
+    }
+
+    if (Object.keys(missingFieldErrors).length > 0) {
+      setFieldErrors(missingFieldErrors);
+      setOrderError("");
+      return;
+    }
+
     setIsPlacingOrder(true);
     setOrderError("");
+    setFieldErrors({});
     try {
       const response = await placeOrder(items, customerDetails);
       if (response) {
@@ -107,11 +152,19 @@ export default function CheckoutPage() {
       }
     } catch (error) {
       console.error("Error placing order:", error);
-      setOrderError(
-        error instanceof Error
-          ? error.message
-          : "We could not place your order. Please try again.",
-      );
+      if (error instanceof OrderRequestError) {
+        setFieldErrors(error.fieldErrors);
+        const nonFieldErrors =
+          error.fieldErrors.detail ??
+          error.fieldErrors.non_field_errors;
+        setOrderError(nonFieldErrors?.join(" ") ?? "");
+      } else {
+        setOrderError(
+          error instanceof Error
+            ? error.message
+            : "We could not place your order. Please try again.",
+        );
+      }
     } finally {
       setIsPlacingOrder(false);
     }
@@ -189,17 +242,43 @@ export default function CheckoutPage() {
                         {field.label}
                       </span>
                       <input
-                        className="px-4 min-h-12 w-full rounded-[14px] border-2 border-ink bg-white text-base text-ink outline-none focus:ring-2 focus:ring-brand"
+                        className={`px-4 min-h-12 w-full rounded-[14px] border-2 bg-white text-base text-ink outline-none focus:ring-2 focus:ring-brand ${
+                          fieldErrors[field.key]
+                            ? "border-red"
+                            : "border-ink"
+                        }`}
                         id={field.id}
                         placeholder={field.placeholder}
                         type={field.type}
-                        onChange={(e) =>
+                        required={field.required}
+                        pattern={field.pattern}
+                        maxLength={field.maxLength}
+                        value={customerDetails[field.key]}
+                        aria-invalid={Boolean(fieldErrors[field.key])}
+                        aria-describedby={
+                          fieldErrors[field.key] ? `${field.id}-error` : undefined
+                        }
+                        onChange={(e) => {
                           setCustomerDetails((prev) => ({
                             ...prev,
                             [field.key]: e.target.value,
-                          }))
-                        }
+                          }));
+                          setFieldErrors((prev) => {
+                            if (!prev[field.key]) return prev;
+                            const next = { ...prev };
+                            delete next[field.key];
+                            return next;
+                          });
+                        }}
                       />
+                      {fieldErrors[field.key] ? (
+                        <span
+                          id={`${field.id}-error`}
+                          className="mt-1 text-sm text-red block"
+                        >
+                          {fieldErrors[field.key].join(" ")}
+                        </span>
+                      ) : null}
                     </label>
                   ))}
                 </div>
