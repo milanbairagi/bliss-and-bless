@@ -25,14 +25,14 @@ const fields = [
     label: "First name",
     type: "text",
     placeholder: "",
-    key: "firstName",
+    key: "first_name",
   },
   {
     id: "last-name",
     label: "Last name",
     type: "text",
     placeholder: "",
-    key: "lastName",
+    key: "last_name",
   },
   {
     id: "address",
@@ -69,8 +69,8 @@ export default function CheckoutPage() {
   );
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
     email: "",
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     address: "",
     city: "",
     phone: "",
