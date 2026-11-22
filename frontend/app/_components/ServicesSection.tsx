@@ -1,3 +1,4 @@
+import { Carousel } from "@/components/common/Carousel";
 import { ProductCard } from "@/components/common/ProductCard";
 import { getFeaturedProducts } from "@/services/productServices";
 import Link from "next/link";
@@ -41,7 +42,12 @@ export async function ServicesSection() {
         >
           Shop by category
         </h2>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
+        <Carousel
+          ariaLabel="Shop categories"
+          itemClassName="w-[82%] sm:w-[46%] md:w-[31%] lg:w-[23.5%]"
+          previousLabel="Previous categories"
+          nextLabel="Next categories"
+        >
           {categories.map((category) => (
             <Link
               className="flex-col gap-3.5 flex"
@@ -85,7 +91,7 @@ export async function ServicesSection() {
               </span>
             </Link>
           ))}
-        </div>
+        </Carousel>
       </section>
       <section className="py-18 bg-white">
         <div className="px-5 mx-auto max-w-300 min-[721px]:px-8">
@@ -128,11 +134,20 @@ export async function ServicesSection() {
         >
           Featured pieces
         </h2>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
+        <p className="mb-8 mt-0 max-w-160 text-muted">
+          These are our most popular items, carefully selected to showcase the
+          best of what we have to offer.
+        </p>
+        <Carousel
+          ariaLabel="Featured products"
+          itemClassName="w-[82%] sm:w-[46%] md:w-[31%] lg:w-[23.5%]"
+          previousLabel="Previous featured products"
+          nextLabel="Next featured products"
+        >
           {featuredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
-        </div>
+        </Carousel>
       </section>
     </>
   );
