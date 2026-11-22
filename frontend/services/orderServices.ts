@@ -13,7 +13,6 @@ export async function getShippingCost(): Promise<{
   return response.json();
 }
 
-// Dummy place order function
 export async function placeOrder(
   items: BagItem[],
   customerDetails: CustomerDetails,
