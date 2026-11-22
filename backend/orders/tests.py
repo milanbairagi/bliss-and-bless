@@ -41,7 +41,13 @@ class OrderSerializerTests(TestCase):
                 "items": [
                     {"key": "bracelet:rose-red", "quantity": 2},
                     {"key": "scarf", "quantity": 1},
-                ]
+                ],
+                "email": "maya@example.com",
+                "first_name": "Maya",
+                "last_name": "Sharma",
+                "address": "123 Main Street",
+                "city": "Kathmandu",
+                "phone": "9800000000",
             }
         )
 
@@ -72,6 +78,12 @@ class OrderSerializerTests(TestCase):
             data={
                 "status": Order.Status.CANCELLED,
                 "items": [{"key": "scarf", "quantity": 1}],
+                "email": "maya@example.com",
+                "first_name": "Maya",
+                "last_name": "Sharma",
+                "address": "123 Main Street",
+                "city": "Kathmandu",
+                "phone": "9800000000",
             }
         )
 
@@ -129,6 +141,41 @@ class OrderSerializerTests(TestCase):
             "Product variant does not exist.",
         )
 
+    def test_rejects_blank_customer_details(self):
+        serializer = OrderSerializer(
+            data={
+                "email": "",
+                "first_name": " ",
+                "last_name": "Sharma",
+                "address": "123 Main Street",
+                "city": "Kathmandu",
+                "phone": "9800000000",
+                "items": [{"key": "scarf", "quantity": 1}],
+            }
+        )
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("email", serializer.errors)
+        self.assertIn("first_name", serializer.errors)
+
+    def test_rejects_invalid_phone_number(self):
+        for phone in ["970000000", "9600000000", "98000000001"]:
+            with self.subTest(phone=phone):
+                serializer = OrderSerializer(
+                    data={
+                        "email": "maya@example.com",
+                        "first_name": "Maya",
+                        "last_name": "Sharma",
+                        "address": "123 Main Street",
+                        "city": "Kathmandu",
+                        "phone": phone,
+                        "items": [{"key": "scarf", "quantity": 1}],
+                    }
+                )
+
+                self.assertFalse(serializer.is_valid())
+                self.assertIn("phone", serializer.errors)
+
 
 class OrderModelTests(TestCase):
     def test_status_defaults_to_pending(self):
@@ -185,7 +232,7 @@ class OrderAPITests(APITestCase):
                 "last_name": "Sharma",
                 "address": "123 Main Street",
                 "city": "Kathmandu",
-                "phone": "+9779800000000",
+                "phone": "9800000000",
                 "latitude": "27.717245",
                 "longitude": "85.323961",
                 "items": [{"key": "bracelet:rose-red", "quantity": 2}],
@@ -206,7 +253,7 @@ class OrderAPITests(APITestCase):
         order = Order.objects.get(reference_id=response.data["reference_id"])
         self.assertEqual(order.address, "123 Main Street")
         self.assertEqual(order.city, "Kathmandu")
-        self.assertEqual(order.phone, "+9779800000000")
+        self.assertEqual(order.phone, "9800000000")
 
     def test_creates_order_when_csrf_cookie_is_present(self):
         user = get_user_model().objects.create_user(
@@ -225,7 +272,7 @@ class OrderAPITests(APITestCase):
                 "last_name": "Sharma",
                 "address": "123 Main Street",
                 "city": "Kathmandu",
-                "phone": "+9779800000000",
+                "phone": "9800000000",
                 "latitude": "27.717245",
                 "longitude": "85.323961",
                 "items": [{"key": "bracelet:rose-red", "quantity": 2}],

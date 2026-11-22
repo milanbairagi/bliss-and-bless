@@ -63,6 +63,14 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
+    phone = serializers.RegexField(
+        regex=r"^(?:97|98)\d{8}$",
+        required=True,
+        allow_blank=False,
+        error_messages={
+            "invalid": "Phone number must be 10 digits and start with 97 or 98."
+        },
+    )
 
     class Meta:
         model = Order
@@ -82,6 +90,13 @@ class OrderSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+        extra_kwargs = {
+            "email": {"required": True, "allow_blank": False},
+            "first_name": {"required": True, "allow_blank": False},
+            "last_name": {"required": True, "allow_blank": False},
+            "address": {"required": True, "allow_blank": False},
+            "city": {"required": True, "allow_blank": False},
+        }
         read_only_fields = [
             "id",
             "reference_id",
