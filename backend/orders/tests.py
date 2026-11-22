@@ -1,8 +1,9 @@
 from django.urls import reverse
 from uuid import UUID
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
-from rest_framework.test import APITestCase
+from rest_framework.test import APIClient, APITestCase
 
 from products.models import Category, Product, ProductColor
 
@@ -206,6 +207,33 @@ class OrderAPITests(APITestCase):
         self.assertEqual(order.address, "123 Main Street")
         self.assertEqual(order.city, "Kathmandu")
         self.assertEqual(order.phone, "+9779800000000")
+
+    def test_creates_order_when_csrf_cookie_is_present(self):
+        user = get_user_model().objects.create_user(
+            username="checkout-user",
+            password="test-password",
+        )
+        client = APIClient(enforce_csrf_checks=True)
+        client.force_login(user)
+        client.cookies["csrftoken"] = "present-but-no-header"
+
+        response = client.post(
+            reverse("order-create"),
+            {
+                "email": "maya@example.com",
+                "first_name": "Maya",
+                "last_name": "Sharma",
+                "address": "123 Main Street",
+                "city": "Kathmandu",
+                "phone": "+9779800000000",
+                "latitude": "27.717245",
+                "longitude": "85.323961",
+                "items": [{"key": "bracelet:rose-red", "quantity": 2}],
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
 
     def test_retrieves_order_by_reference_id(self):
         order = Order.objects.create()

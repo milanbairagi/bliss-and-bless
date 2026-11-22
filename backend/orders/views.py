@@ -9,6 +9,7 @@ from .serializers import OrderSerializer
 class OrderCreateView(CreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    authentication_classes = []
 
 
 class OrderDetailView(RetrieveAPIView):
