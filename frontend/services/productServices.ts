@@ -41,6 +41,5 @@ export async function getProducts(category = "all"): Promise<Product[]> {
   }
 
   const data: Product[] = await response.json();
-  console.log("Fetched products:", data);
   return data;
 }
