@@ -1,15 +1,16 @@
 import { BagItem } from "@/components/common/BagProvider";
 import type { CustomerDetails } from "@/types/customer";
 import type { orderConfirmation } from "@/types/order";
-import { orderConfirmationDummyData } from "@/dummyData/order";
 
 export async function getShippingCost(): Promise<{
   fee: number;
   threshold: number;
 }> {
-  // Dummy implementation for fetching shipping fee
-  const returnData = { fee: 75, threshold: 300 };
-  return new Promise((resolve) => setTimeout(() => resolve(returnData), 1000));
+  const response = await fetch("/api/shipping-fee/");
+  if (!response.ok) {
+    throw new Error("Failed to fetch shipping cost");
+  }
+  return response.json();
 }
 
 // Dummy place order function
@@ -24,7 +25,25 @@ export async function placeOrder(
     throw new Error("Customer details are required to place an order.");
   }
 
-  return new Promise((resolve) =>
-    setTimeout(() => resolve(orderConfirmationDummyData), 1000),
-  );
+  const request = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      ...customerDetails,
+      items: items.map((item) => ({
+        key: item.key,
+        quantity: item.quantity,
+      })),
+    }),
+  };
+
+  const response = await fetch("/api/orders/", request);
+
+  if (!response.ok) {
+    throw new Error("Failed to place order");
+  }
+
+  return response.json();
 }
