@@ -7,7 +7,6 @@ services:
       DEBUG: ${DEBUG:-false}
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
       CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-http://localhost}
-      API_BASE_URL: http://backend:8000
       SQLITE_PATH: /app/data/db.sqlite3
     volumes:
       - ./backend/data:/app/data
