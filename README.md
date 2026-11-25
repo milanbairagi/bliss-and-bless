@@ -9,10 +9,18 @@ The stack runs behind nginx on port 80:
 - Django admin/docs: `http://localhost/admin/`, `http://localhost/docs/`
 - Uploaded media: `http://localhost/media/`
 
-Start the stack:
+### Start the stack:
+
+For production:
 
 ```bash
 docker compose up --build
+```
+
+For development with hot reload:
+
+```bash
+docker compose -f compose.yaml -f compose.dev.yaml up --build
 ```
 
 The SQLite database is stored in `backend/data/db.sqlite3`. The database directory is
