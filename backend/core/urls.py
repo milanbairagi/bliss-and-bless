@@ -21,11 +21,13 @@ from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from orders.views import OrderCreateView, OrderDetailView, ShippingFeeView
 from products.views import ProductListView, ProductDetailView
+from core.views import HealthCheckView
 
 urlpatterns = [
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('admin/', admin.site.urls),
+    path('api/health/', HealthCheckView.as_view(), name='health-check'),
     path('api/products/', ProductListView.as_view(), name='product-list'),
     path('api/products/<slug:slug>/', ProductDetailView.as_view(), name='product-detail'),
     path('api/orders/', OrderCreateView.as_view(), name='order-create'),
